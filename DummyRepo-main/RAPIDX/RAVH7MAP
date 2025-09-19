@@ -1,0 +1,74 @@
+1NEXT L  RAVH7MAP
+0001 * MAP2: PROTOTYPE
+0002 * INPUT USING MAP 'XXXXXXXX'
+0003 *     #EMP-NBR #HARDCOPY
+0004 DEFINE DATA PARAMETER
+0005 1 #EMP-NBR (A007)
+0006 1 #HARDCOPY (A001)
+0007 END-DEFINE
+0008 FORMAT PS=023 LS=080 ZP=OFF SG=OFF KD=OFF IP=OFF
+0009 * MAP2: MAP PROFILES *****************************        200***********
+0010 * .TTAAAMMOO   D I D I N D I D I        ?_)^&:+(                       *
+0011 * 023079        N0 NUCN             X        01 SYSPROF NL           1 *
+0012 ************************************************************************
+0013 INPUT          (     IP=OFF                                           /*
+0014                                                                        )
+0015  070T '(UR6882)'
+0016 /
+0017  070T '(RAVH7)'
+0018 /
+0019 /
+0020 /
+0021 /
+0022 /
+0023 /
+0024 /
+0025  024T '=*= DOCTOR OUTSTANDING AWARDS =*='
+0026 /
+0027 /
+0028 /
+0029  026T 'ENTER EMPLOYEE NBR:'
+0030  047T #EMP-NBR  (AD=AILT'_' ) /*.99D007 A007 .
+0031 /
+0032 /
+0033  026T 'ENTER ''H'' FOR HARDCOPY:'
+0034  051T #HARDCOPY  (AD=AILT'_' ) /*.99D001 A001 .
+0035 /
+0036 /
+0037 /
+0038 /
+0039 /
+0040 /
+0041 /
+0042 /
+0043 /
+0044  015T 'HIT ''PF1'' FOR MAIN MENU OR ''PF2'' FOR PREVIOUS MENU'
+0045 * MAP2: VALIDATION *****************************************************
+0046 RULEVAR F05#EMP-NBR
+0047 INCDIC                                 ;
+0048 IF & = ' '
+0049   THEN
+0050   REINPUT 'EMPLOYEE NBR REQUIRED'
+0051   MARK *& SOUND ALARM
+0052 END-IF
+0053 **
+0054 IF & EQ MASK (......' ')
+0055   THEN
+0056   COMPRESS '0' & INTO & LEAVING NO
+0057 END-IF
+0058 **
+0059 IF & NE MASK (9999999)
+0060   THEN
+0061   REINPUT 'INVALID EMPLOYEE NBR'
+0062   MARK *& SOUND ALARM
+0063 END-IF
+0064 RULEVAR F05#HARDCOPY
+0065 INCDIC                                 ;
+0066 IF & NE ' ' AND & NE 'H'
+0067   THEN
+0068   REINPUT 'TO SELECT HARDCOPY OPTION ENTER "H"'
+0069   MARK 2 SOUND ALARM
+0070 END-IF
+0071 * MAP2: END OF MAP *****************************************************
+0072 END
+***** End of List *****

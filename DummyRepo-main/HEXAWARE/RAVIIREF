@@ -1,0 +1,341 @@
+1NEXT L  RAVIIREF
+0280 DEFINE DATA
+0290 LOCAL USING UTMSGA
+0300 LOCAL
+0310 **
+0320 1 #CATEGORY (A7)
+0330 1 REDEFINE #CATEGORY
+0340   2 #BASE (A3)
+0350   2 #EQUIP (A3)
+0360   2 #POS (A1)
+0370 1 #EMP-NBR (A7)
+0380 1 REDEFINE #EMP-NBR
+0390   2 #EMP-SAVE (A6)
+0400 1 #SENIOR (A6)         /* REVISED 03/92 - BJF
+0410 1 #TODAY-PARS (N5)
+0420 **
+0430 1 #BASE-HIT (A1)
+0440 1 #BASE-TYPE-EQUIP (A7)
+0450 1 #EQUIP-BEGIN (N5)
+0460 1 #EQUIP-CHK (A5)
+0470 1 #EQUIP-END (N5)
+0480 1 #EQUIP-HIT (A1)
+0490 **
+0500 1 PERSONNEL VIEW OF DOCTOR-PERSONNEL-DATA
+0510   2 EMPLOYEE-NBR
+0520   2 SENIORITY-NUM     /* REVISED 03/92 - BJF
+0530   2 SENIORITY-INSERTION-CHAR
+0540 **
+0550 1 CODE VIEW OF DOCTOR-POSITION-CODE
+0560   2 POSITION-CODE
+0570 **
+0580 1 EQUIPMENT VIEW OF DOCTOR-EQUIPMENT-TYPE-FILE
+0590   2 EQUIP-TYPE
+0600   2 REC-TYPE-IND
+0610   2 POSITION-CODE
+0620 **
+0630 1 DOMICILE VIEW OF DOCTOR-DOMICILE-INFORMATION
+0640   2 BASE-CODE
+0650   2 BASE-TYPE
+0660   2 EQUIP/ADMIN-TYPE
+0670   2 EQUIP/ADMIN-BEGIN-DATE
+0680   2 EQUIP/ADMIN-END-DATE
+0690 **
+0700 1 #ISN (B4)
+0710 1 #PREF-SR (A6)           /* REVISED 03/92 - BJF
+0720 1 #TOTAL (P5)
+0730 **
+0740 1 #FIRST-PREF (P5)
+0750 1 #SECOND-PREF (P5)
+0760 1 #THIRD-PREF (P5)
+0770 **
+0780 1 #AE-CNT (P2)
+0790 1 #I (P2)
+0800 1 #A (P2)
+0810 1 #C (P2)
+0820 1 #READ-CNT (P5)
+0830 **
+0840 1 PREF-1 VIEW OF DOCTOR-VACANCY-AE-PREF
+0850   2 RECORD-STATUS
+0860   2 SENIORITY-NUM    /* REVISED 03/92 - BJF
+0870   2 SENIORITY-INSERTION-CHAR
+0880   2 C*ADVANCE-ENTITLEMENT-PREFERENCE
+0890   2 ADVANCE-ENTITLEMENT-PREFERENCE (1:24)
+0900     3 ENTITLEMENT-BASE
+0910     3 ENTITLEMENT-EQUIP
+0920     3 ENTITLEMENT-POSITION
+0930     3 ENTITLEMENT-PREF-NBR
+0940 **
+0950 1 PREF-2 VIEW OF DOCTOR-VACANCY-AE-PREF
+0960   2 ADVANCE-ENTITLEMENT-PREFERENCE (25:48)
+0970     3 ENTITLEMENT-BASE
+0980     3 ENTITLEMENT-EQUIP
+0990     3 ENTITLEMENT-POSITION
+1000     3 ENTITLEMENT-PREF-NBR
+1010 **
+1020 1 PREF-3 VIEW OF DOCTOR-VACANCY-AE-PREF
+1030   2 ADVANCE-ENTITLEMENT-PREFERENCE (49:72)
+1040     3 ENTITLEMENT-BASE
+1050     3 ENTITLEMENT-EQUIP
+1060     3 ENTITLEMENT-POSITION
+1070     3 ENTITLEMENT-PREF-NBR
+1080 **
+1090 1 PREF-4 VIEW OF DOCTOR-VACANCY-AE-PREF
+1100   2 ADVANCE-ENTITLEMENT-PREFERENCE (73:96)
+1110     3 ENTITLEMENT-BASE
+1120     3 ENTITLEMENT-EQUIP
+1130     3 ENTITLEMENT-POSITION
+1140     3 ENTITLEMENT-PREF-NBR
+1150 **
+1160 END-DEFINE /* (0720)
+1170 ************************************************************************
+1180 **
+1190 SET KEY PF1 = 'MAIN'
+1200 SET KEY PF2 = 'MUKUNDAM'
+1210 **
+1220 #TODAY-PARS := *DATX - D'2024-12-30'
+1230 **
+1240 INPUT //// 6T
+1250   '*** LIST DOCTOR ADVANCE ENTITLEMENT CASE PREFERENCES BY CATEGORY ***'
+1260   //  16T '*** ONLY DOCTORS SENIOR TO YOU WILL BE LISTED ***'
+1270   /// 21T 'EMPLOYEE NUMBER:' *USER
+1280   // 21T 'ENTER THE FOLLOWING:'
+1290   // 21T 'BASE:' #BASE (AD=AI'_')
+1300   2X 'EQUIPMENT:' #EQUIP (AD=AI'_')
+1310   2X 'POSITION:' #POS (AD=AI'_')
+1320   /////////  14T 'HIT "PF1" FOR MAIN MENU OR "PF2" FOR PREVIOUS MENU'
+1330 **
+1340 ASSIGN #EMP-NBR = *USER
+1350 COMPRESS '0' #EMP-SAVE INTO #EMP-NBR
+1360   LEAVING NO
+1370 **
+1380 ************************************************************************
+1390 *****               *****   INPUT AUDITS   *****                   *****
+1400 ************************************************************************
+1410 **
+1420 FIND (1) PERSONNEL WITH EMPLOYEE-NBR = #EMP-NBR
+1430   COMPRESS SENIORITY-NUM (1420) SENIORITY-INSERTION-CHAR (1420)
+1440     INTO #SENIOR LEAVING NO    /* REVISED 03/92 - BJF
+1450 END-FIND /* (1420)
+1460 IF *COUNTER (1420) = 0 THEN
+1470   REINPUT 'EMPLOYEE NUMBER NOT FOUND IN PERSONNEL FILE' SOUND ALARM
+1480 END-IF /* (1430)
+1490 **
+1500 RESET #BASE-HIT #EQUIP-HIT
+1510 **
+1520 IF #BASE = ' ' THEN
+1530   REINPUT 'BASE CODE REQUIRED' MARK 1 SOUND ALARM
+1540 END-IF /* (1520)
+1550 **
+1560 IF #EQUIP = ' ' THEN
+1570   REINPUT 'EQUIPMENT TYPE REQUIRED' MARK 2 SOUND ALARM
+1580 END-IF /* (1560)
+1590 **
+1600 IF #POS = ' ' THEN
+1610   REINPUT 'POSITION CODE REQUIRED' MARK 3 SOUND ALARM
+1620 END-IF /* (1600)
+1630 **
+1640 COMPRESS #BASE 'P' #EQUIP INTO #BASE-TYPE-EQUIP LEAVING NO
+1650 READ DOMICILE BY BASE-TYPE-EQUIP                 /* READ DOMICILE
+1660     STARTING FROM #BASE-TYPE-EQUIP                 /* FILE
+1670   IF (BASE-CODE (1650) NE #BASE)                 /* IF NO BASE OR
+1680       OR (BASE-TYPE (1650) NE 'P')               /* TYPE MATCH
+1690     THEN                                         /* THEN ESCAPE
+1700     ESCAPE BOTTOM
+1710   END-IF /* (1670)                               /* OTHERWISE
+1720   ASSIGN #BASE-HIT = 'Y'                         /* SET INDICATOR
+1730   IF EQUIP/ADMIN-TYPE (1650) NE #EQUIP           /* IF NO EQUIP
+1740     THEN                                         /* MATCH THEN
+1750     IGNORE                                       /* IGNORE;
+1760   ELSE                                           /* OTHERWISE
+1770     ASSIGN #EQUIP-HIT = 'Y'                      /* SET INDICATOR
+1780     ASSIGN #EQUIP-BEGIN = EQUIP/ADMIN-BEGIN-DATE (1650) /* SAVE
+1790     ASSIGN #EQUIP-END = EQUIP/ADMIN-END-DATE (1650) /* BEGIN &
+1800   END-IF /* (1730)                               /* END DTES FOR
+1810 END-READ /* (1650)                               /* EQUIP
+1820 IF #BASE-HIT NE 'Y'                              /* IF NO MATCH
+1830   THEN                                           /* BASE THEN
+1840   REINPUT 'INVALID BASE CODE'                    /* PROVIDE
+1850     MARK *#BASE SOUND ALARM                      /* ERROR MSG
+1860 END-IF /* (1820)
+1870 IF #EQUIP-HIT NE 'Y'                             /* IF NO BASE-EQUIP
+1880   THEN                                           /* MATCH
+1890   REINPUT 'EQUIPMENT NOT VALID FOR BASE'         /* PROVIDE
+1900     MARK *#EQUIP SOUND ALARM                     /* ERROR MSG
+1910 END-IF /* (1870)
+1920 IF #EQUIP-END NE 0                               /* IF EQUIP END-
+1930   THEN                                           /* DATE EXISTS
+1940   IF #TODAY-PARS GT #EQUIP-END                   /* & EQUIP END DATE
+1950     THEN                                         /* ON OR AFTER TODAY'S
+1960     REINPUT 'EQUIPMENT NO LONGER VALID FOR BASE' /* DATE THEN
+1970       MARK *#EQUIP SOUND ALARM                   /* GIVE ERROR MSG
+1980   END-IF /* (1940)
+1990 END-IF /* (1920)
+2000 **
+2010 RESET #EQUIP-HIT
+2020 **
+2030 COMPRESS 'P' #EQUIP #POS INTO #EQUIP-CHK LEAVING NO
+2040 READ EQUIPMENT BY RECTYPE-EQUIP-POS STARTING FROM /* READ EQUIP
+2050     #EQUIP-CHK                                   /* FILE
+2060   IF EQUIP-TYPE (2040) NE #EQUIP OR              /* IF NO MATCH
+2070       REC-TYPE-IND (2040) NE 'P'                 /* FOR EQUIP OR
+2080     THEN                                         /* TYPE THEN
+2090     ESCAPE BOTTOM                                /* ESCAPE
+2100   END-IF /* (2060)
+2110   IF #POS = POSITION-CODE (2040)                 /* IF POS FOUND
+2120     THEN
+2130     ASSIGN #EQUIP-HIT = 'Y'                      /* SET INDICATOR
+2140     ESCAPE BOTTOM                                /* & ESCAPE
+2150   END-IF /* (2110)                               /* IF NOT FOUND
+2160   ASSIGN #EQUIP-HIT = 'E'                        /* SET INDICATOR
+2170 END-READ /* (2040)
+2180 IF #EQUIP-HIT = 'E' AND #POS NE 'U'              /* IF NO MATCH
+2190   THEN                                           /* FOR POS GIVE
+2200   REINPUT 'POSITION NOT VALID FOR EQUIPMENT'     /* ERROR MSG
+2210     MARK *#POS SOUND ALARM
+2220 END-IF /* (2180)
+2230 IF #EQUIP-HIT = ' '                              /* IF NO MATCH FOR
+2240   THEN                                           /* EQUIP & POS
+2250   REINPUT 'POSITION NOT VALID FOR EQUIPMENT'     /* PROVIDE
+2260     MARK *#POS SOUND ALARM                       /* ERROR MSG
+2270 END-IF /* (2230)
+2280 **
+2290 HISTOGRAM CODE POSITION-CODE STARTING WITH       /* READ POSITION
+2300     #POS                                         /* CODE FILE
+2310 END-HISTOGRAM /* (2290)
+2320 IF *COUNTER (2290) = 0                           /* IF NO MATCH
+2330   THEN                                           /* FOR POS
+2340   REINPUT 'INVALID POSITION CODE'                /* PROVIDE
+2350     MARK *#POS SOUND ALARM                       /* ERROR MSG
+2360 END-IF /* (2320)
+2370 **
+2380 ************************************************************************
+2390 READ PREF-1 BY RECORD-STATUS-EMPNBR-SEQNBR       /* RD ALL CURRENT RCDS
+2400   STARTING FROM 'C'
+2410   IF RECORD-STATUS (2390) NE 'C'                 /* DROP OUT OF LOOP
+2420     THEN                                         /* ONCE ALL CURRENT
+2430     ESCAPE BOTTOM                                /* RCDS ARE READ
+2440   END-IF /* (2410)
+2450   ADD 1 TO #READ-CNT               /* MUKUNDA 12/09
+2460   IF #READ-CNT GE 3000             /* MUKUNDA 12/09
+2470     SET CONTROL 'N'                /* MUKUNDA 12/09
+2480     INPUT //// 24X 'PROCESSING IN PROGRESS - PLEASE WAIT'
+2490     RESET #READ-CNT                /* MUKUNDA 12/09
+2500   END-IF /* (2460)                 /* MUKUNDA 12/09
+2510   RESET #PREF-SR #ISN #AE-CNT #A    #C           /* RESET WORK ARRAYS &
+2520   COMPRESS SENIORITY-NUM (2390) SENIORITY-INSERTION-CHAR (2390)
+2530     INTO #PREF-SR LEAVING NO      /* REVISED 03/92 - BJF
+2540 **
+2550   REJECT IF #PREF-SR GT #SENIOR                  /* REJECT THOSE WITH
+2560 **                                               /* HIGHER SENIORITY #'S
+2570   REJECT IF C*ADVANCE-ENTITLEMENT-PREFERENCE EQ 0   /* REJECT THOSE W/NO
+2580 **                                                  /* CASE PREFERENCES
+2590   ASSIGN #ISN = *ISN                                /* SAVE ISN NUMBER
+2600   ASSIGN #AE-CNT = C*ADVANCE-ENTITLEMENT-PREFERENCE   /* FOR GETTING RCD
+2610 **                                                    /* LATER; SAVE
+2620 **                                                    /* #PREFS IN RCD
+2630   IF #AE-CNT > 24                                /* IF > 24 PREFS EXIST
+2640     THEN
+2650     ASSIGN #A = 24                               /* SET LOOP MAX = 24;
+2660   ELSE                                           /* ELSE PROCESS ALL
+2670     ASSIGN #A = #AE-CNT                          /* EXISTING PREFS
+2680   END-IF /* (2630)
+2690 **
+2700   FOR #C = 1 THRU #A                             /* FOR 1ST 24 POSSIBLE
+2710 **                                               /* PREFS OF DOCTOR
+2720     IF ENTITLEMENT-BASE (2390/#C) = #BASE AND    /* IF PREF CATGY EQ TO
+2730       ENTITLEMENT-EQUIP (2390/#C) = #EQUIP AND   /* INPUT CATGY
+2740       ENTITLEMENT-POSITION (2390/#C) = #POS
+2750       THEN
+2760       ADD 1 TO #TOTAL                       /* MUKUNDA 1/93
+2770       IF ENTITLEMENT-PREF-NBR (2390/#C) = 1      /* MUKUNDA 1/93
+2780         THEN ADD 1 TO #FIRST-PREF                /* MUKUNDA 1/93
+2790       END-IF /* (2770)                           /* MUKUNDA 1/93
+2800       IF ENTITLEMENT-PREF-NBR (2390/#C) = 2      /* MUKUNDA 1/93
+2810         THEN ADD 1 TO #SECOND-PREF               /* MUKUNDA 1/93
+2820       END-IF /* (2800)                           /* MUKUNDA 1/93
+2830       IF ENTITLEMENT-PREF-NBR (2390/#C) = 3      /* MUKUNDA 1/93
+2840         THEN ADD 1 TO #THIRD-PREF                /* MUKUNDA 1/93
+2850       END-IF /* (2830)                           /* MUKUNDA 1/93
+2860     END-IF /* (2720)
+2870   END-FOR /* (2700)
+2880 **
+2890   IF #AE-CNT LE 24                               /* IF 24 PREFS OR LESS
+2900     THEN                                         /* EXIST
+2910     IGNORE                                       /* SKIP THE FOLLOWING
+2920   ELSE                                           /* PROCESSING; ELSE
+2930     GET PREF-2 #ISN                              /* OBTAIN PREFS 25-48
+2940 **                                               /* IF EXIST USING 2ND
+2950 **                                               /* VIEW
+2960       IF #AE-CNT > 48                            /* IF > 24 PREFS EXIST
+2970         THEN
+2980         ASSIGN #A = 48                           /* SET LOOP MAX = 48
+2990       ELSE                                       /* ELSE PROCESS ALL
+3000         ASSIGN #A = #AE-CNT                      /* REMAINING PREFS OVER
+3010       END-IF /* (2960)                           /* 24
+3020 **
+3030       FOR #C = 25 THRU #A                        /* FOR NEXT 24 POSSIBLE
+3040 **                                               /* PREFS OVER 24
+3050         IF ENTITLEMENT-BASE (2930/#C) = #BASE AND     /* IF PREF CATGY
+3060           ENTITLEMENT-EQUIP (2930/#C) = #EQUIP AND    /* EQ TO INPUT
+3070           ENTITLEMENT-POSITION (2930/#C) = #POS       /* CATGY
+3080           THEN
+3090           ADD 1 TO #TOTAL                          /* MUKUNDA 1/93
+3100         END-IF /* (3050)                         /* WORK ARRAY
+3110       END-FOR /* (3030)
+3120   END-IF /* (2890)
+3130 **
+3140   IF #AE-CNT LE 48                               /* IF 48 PREFS OR LESS
+3150     THEN                                         /* EXIST, SKIP THE
+3160     IGNORE                                       /* FOLLOWING PROCESSING
+3170   ELSE                                           /* IF > 48 PREFS EXIST
+3180     GET PREF-3 #ISN                              /* OBTAIN
+3190 **                                               /* PREFS 49-72 IF EXIST
+3200 **                                               /* USING 3RD VIEW
+3210       IF #AE-CNT > 72                            /* IF > 72 PREFS EXIST
+3220         THEN
+3230         ASSIGN #A = 72                           /* SET LOOP MAX = 72
+3240       ELSE                                       /* ELSE PROCESSING ALL
+3250         ASSIGN #A = #AE-CNT                      /* REMAINING PREFS OVER
+3260       END-IF /* (3210)                           /* 48
+3270 **
+3280       FOR #C = 49 THRU #A                        /* FOR NEXT 24 POSSIBLE
+3290 **                                               /* PREFS OVER 1ST 48
+3300         IF ENTITLEMENT-BASE (3180/#C) = #BASE AND     /* IF PREF CATGY
+3310           ENTITLEMENT-EQUIP (3180/#C) = #EQUIP AND    /* EQ TO INPUT
+3320           ENTITLEMENT-POSITION (3180/#C) = #POS       /* CATGY
+3330           THEN
+3340           ADD 1 TO #TOTAL                         /* MUKUNDA 1/93
+3350         END-IF /* (3300)
+3360       END-FOR /* (3280)
+3370   END-IF /* (3140)
+3380 **
+3390   IF #AE-CNT LE 72                               /* IF 72 PREFS OR LESS
+3400     THEN                                         /* EXIST THEN SKIP THE
+3410     IGNORE                                       /* FOLLOWING PROCESSING
+3420   ELSE                                           /* IF > 72 PREFS EXIST
+3430     GET PREF-4 #ISN                              /* OBTAIN
+3440 **                                               /* PREFS 73-96 IF EXIST
+3450 **                                               /* USING 4TH VIEW
+3460       ASSIGN #A = #AE-CNT                        /*PROCESS ALL REMAINING
+3470 **                                               /* PREFS
+3480       FOR #C = 73 THRU #A                        /* FOR REMAINING PREFS
+3490 **                                               /* OVER 1ST 72
+3500         IF ENTITLEMENT-BASE (3430/#C) = #BASE AND     /* IF PREF CATGY
+3510           ENTITLEMENT-EQUIP (3430/#C) = #EQUIP AND    /* EQ TO INPUT
+3520           ENTITLEMENT-POSITION (3430/#C) = #POS       /* CATGY
+3530           THEN
+3540           ADD 1 TO #TOTAL                         /* MUKUNDA 1/93
+3550         END-IF /* (3500)
+3560       END-FOR /* (3480)
+3570   END-IF /* (3390)
+3580 **
+3590 END-READ /* (2390)
+3600 ************************************************************************
+3610 INPUT USING MAP 'AEPREFMP'
+3620 **
+3630 IF *PF-KEY = 'PF1' FETCH 'MAIN'
+3640   ELSE FETCH 'MUKUNDAM'
+3650 END-IF
+3660 END
+***** End of List *****

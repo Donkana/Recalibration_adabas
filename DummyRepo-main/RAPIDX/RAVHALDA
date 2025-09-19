@@ -1,0 +1,61 @@
+1NEXT L  RAVHALDA
+0010     1 #I                               P    3 /* INDEX
+0020     1 #J                               P    3 /* INDEX
+0030     1 #K                               P    3 /* INDEX
+0040     1 #ISN                             P    8 /* ISN SAVE FIELD
+0050     1 #OPT-IND                         A    1 /* INDICATES OPTION WAS SELECTED
+0060     1 #AWD-CLOSE                       A    5 /* MAP TEXT
+0070     1 #AWD-OPT                         A    1 (1:6) /* AWARD OPTION CHOICE
+0080     1 #AWD-TEXT                        A   10 (1:6) /* AWARD TEXT
+0090     1 #AWD-DATE                        A    7 (1:6) /* AWARD DATE
+0100     1 #CLOSE-DATE                      A    7 /* AWARD CLOSE DATE
+0110     1 #FIRST-DATE                      A    7 /* CONVERSION DATE OPEN WINDOW
+0120     1 #LAST-DATE                       A    7 /* CONVERSION DATE CLOSE WINDOW
+0130     1 #RUN-TEXT                        A   11 /* MAP TEXT
+0140   R 1 #RUN-TEXT                               /* REDEF. BEGIN : #RUN-TEXT
+0150     2 #TEXT                            A    9 /* RUN TEXT
+0160     2 #NBR                             A    2 /* RUN NUMBER
+0170     1 #RUN-OPT                         A    1 (1:20) /* RUN OPTION CHOICE
+0180     1 #RUN-NBR-TEXT                    A    8 (1:20) /* RUN TEXT
+0190     1 #RUN-NBR                         A    2 (1:20) /* RUN NUMBER
+0200     1 #RUN-NBR-N                       N    2 /*
+0210   R 1 #RUN-NBR-N                              /* REDEF. BEGIN : #RUN-NBR-N
+0220     2 #RUN-NBR-A                       A    2 /*
+0230     1 #REPORT-TYPE                     A   25 /*
+0240     1 #TEXT-CV                         C      /* CHECK FOR MODIFIED TEXT
+0250     1 #MAP-TEXT                        A   65 (1:20)
+0260     1 #TEXT2                           A   49 /* MAP TEXT
+0270     1 #DATE                            A    7 /* DATE SELECTED FOR DISPLAY
+0280     1 #TIME                            A    8 /* CURRENT TIME
+0290     1 #TODAY                           A    9 /* CURRENT DATE
+0300     1 #DATE-WK                         A   15 /* GREGORIAN DATE
+0310   R 1 #DATE-WK                                /* REDEF. BEGIN : #DATE-WK
+0320     2 #DATE-DD                         A    2 /* DAY
+0330     2 #DATE-MONTH                      A    9 /* MONTH
+0340   R 2 #DATE-MONTH                             /* REDEF. BEGIN : #DATE-MONTH
+0350     3 #DATE-MMM                        A    3 /* MONTH IN MMM
+0360     2 #DATE-YYYY                       A    4 /* YEAR
+0370     1 #CS-WK                           A   80 /* RV008 DATE CONVERT WORK FIELD
+0380   R 1 #CS-WK                                  /* REDEF. BEGIN : #CS-WK
+0390     2 #ACT                             A    3 /* ACTION TYPE
+0400     2 #RET                             A    1 /* RETURN
+0410     2 #CS-DDMMMYY                      A    7 /* DAY MONTH YEAR
+0420   R 2 #CS-DDMMMYY                             /* REDEF. BEGIN : #CS-DDMMMYY
+0430     3 #CS-DD                           A    2 /* DAY
+0440     3 #CS-MMM                          A    3 /* MONTH
+0450     3 #CS-YY                           A    2 /* YEAR
+0460     2 #CS-FILL1                        A    8 /* FILLER BYTES
+0470     2 #CS-PARS                         N    5 /* PARS DATE
+0480     1 #AE-TEXT                         A   65 (1:60)
+0490     1 #CX-TEXT                         A   65 (1:60) /* TEMPORARY TEXT FIELDS
+0500     1 #REIN-TEXT                       A   65 (1:60) /* TEMPORARY TEXT FIELDS
+0510     1 #UNA-TEXT                        A   65 (1:60) /* TEMPORARY TEXT FIELDS
+0520     1 #MODULE                          A    8 /* MODULE NAME
+0530     1 #LIBRARY                         A    8 /* LIBRARY NAME
+0540     1 #CLOSE-PROCESSED                 A    1 /*
+0550     1 #TRUE-CLOSE-DATE                 N    5 /*
+0560     1 #PARS-CLOSE-DATE                 N    5 /*
+0570     1 #AWARDED                         A    1 /*
+0580     1 #AWARDED-DATE                    N    5 /*
+0590     1 #RUN-NBR-PSEUDO-DATE             N    5 (1:99) /*
+***** End of List *****

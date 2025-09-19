@@ -1,0 +1,76 @@
+1NEXT L  RAVHAMP2
+0001 * MAP2: PROTOTYPE
+0002 * INPUT USING MAP 'XXXXXXXX'
+0003 *     #AWD-CLOSE #LINES #MAP-DATE #MAP-TEXT(*) #REPORT-TYPE
+0004 DEFINE DATA PARAMETER
+0005 1 #AWD-CLOSE (R005)
+0006 1 #LINES (R011)
+0007 1 #MAP-DATE (R007)
+0008 1 #MAP-TEXT (R065/00001:00020)
+0009 1 #REPORT-TYPE (R025)
+0010 END-DEFINE
+0011 FORMAT PS=023 LS=080 ZP=OFF SG=OFF KD=OFF IP=OFF
+0012 * MAP2: MAP PROFILES *****************************        410***********
+0013 * .TTAAAMMOO   D I D I N D I D I        ?_)^&:+(                       *
+0014 * 023079        N0NNUCN             X        01 SYSPROF NL             *
+0015 ************************************************************************
+0016 INPUT          (     IP=OFF                                           /*
+0017                                                                        )
+0018  002T #LINES  (AD=OD ) /*.01R011 R011            .
+0019  015T #REPORT-TYPE  (AD=OI ) /*.01M025 R025 25         .
+0020  041T 'FOR'
+0021  045T #AWD-CLOSE  (AD=OD ) /*.01R005 R005            .
+0022  051T 'DATE:'
+0023  057T #MAP-DATE  (AD=OD ) /*.01R007 R007 7          .
+0024 /
+0025 /
+0026  008T #MAP-TEXT (1+0)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0027    /**A1000200000100001000010000100001100020001001000001000HV
+0028 /
+0029  008T #MAP-TEXT (1+1)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0030 /
+0031  008T #MAP-TEXT (1+2)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0032 /
+0033  008T #MAP-TEXT (1+3)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0034 /
+0035  008T #MAP-TEXT (1+4)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0036 /
+0037  008T #MAP-TEXT (1+5)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0038 /
+0039  008T #MAP-TEXT (1+6)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0040 /
+0041  008T #MAP-TEXT (1+7)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0042 /
+0043  008T #MAP-TEXT (1+8)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0044 /
+0045  008T #MAP-TEXT (1+9)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0046 /
+0047  008T #MAP-TEXT (1+10)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0048 /
+0049  008T #MAP-TEXT (1+11)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0050 /
+0051  008T #MAP-TEXT (1+12)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0052 /
+0053  008T #MAP-TEXT (1+13)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0054 /
+0055  008T #MAP-TEXT (1+14)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0056 /
+0057  008T #MAP-TEXT (1+15)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0058 /
+0059  008T #MAP-TEXT (1+16)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0060 /
+0061  008T #MAP-TEXT (1+17)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0062 /
+0063  008T #MAP-TEXT (1+18)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0064 /
+0065  008T #MAP-TEXT (1+19)  (AD=MIT'_' ) /*.99M065 R065 65         .
+0066 /
+0067  013T 'PF1=MAIN'(I)
+0068  023T 'PF2=PREV'(I)
+0069  033T 'PF7=UP'(I)
+0070  041T 'PF8=DOWN'(I)
+0071  051T 'ENTER=ADD/UPDATE'(I)
+0072 * MAP2: VALIDATION *****************************************************
+0073 * MAP2: END OF MAP *****************************************************
+0074 END
+***** End of List *****
