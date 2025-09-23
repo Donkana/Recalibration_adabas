@@ -1,0 +1,348 @@
+1NEXT L  CHRISTAE
+
+0740 DEFINE DATA
+0750 LOCAL USING CHRISTAE001A                      /* PDA for CHRISTAE010N
+0760 LOCAL USING AFMB001A                      /* Security check
+0770 LOCAL
+0780 1 #CONV-DATE        (D) CONST <D'2024-12-30'>
+0790 1 #ALARM (L)
+0800 1 #CHOICE (A1/1:20)
+0810 1 #DETAIL-REPORT (A1)
+0820 1 #CLOSE (A7)
+0830 1 #CLOSE-DATE (D)
+0840 1 #CLOSE-DATE-TITLE (A11)
+0850 1 #DIRECT-COMMAND (A60)
+0860 1 #GETCHR-LENGTH (B2)
+0870 1 #GETCHR-RTRN (B4)
+0880 1 #GETCHR-WORK (A16)
+0890 1 REDEFINE #GETCHR-WORK
+0900   2 #GETCHR-TID (B2)
+0910   2 #FILL (A4)
+0920   2 #MAX-LINES (B2)
+0930 1 #HELPMAP-COMPONENTS
+0940   2 #TYPE (A1) INIT <'P'>
+0950   2 #MAJOR (A32) INIT <'TSS'>
+0960   2 #MINOR (A32) INIT <'CHRISTAE001M'>
+0970 1 REDEFINE #HELPMAP-COMPONENTS
+0980   2 #HELPMAP (A65)
+0990 1 #I (P3)
+1000 1 #J (P3)
+1010 1 #MARK-TITLE (A20)
+1020 1 #MSG (A79)
+1030 1 #PRINTER (N4)
+1040 1 #PSEUDO-PARS (N5/1:20)
+1050 1 #RUN-NBR (A2/1:20)
+1060 1 #RUN-TEXT (A7/1:20)
+1070 1 #SELECTED (L)
+1080 1 #TRNG-PERIOD (D)
+1090 1 #U-DISPLAY-CV (C/1:20) INIT <(AD=I)>
+1100 1 #U-DETAIL-CV (C) INIT <(AD=I)>
+1110 1 #U-PRINTER-CV (C) INIT <(AD=I)>
+1120 1 #U-TRNG-PERIOD-CV (C) INIT <(AD=I)>
+1130 **
+1140 1 TRAINING-PERIOD VIEW OF TSS-TRNG-PERIOD-PARAMETERS
+1150   2 TRNG-PERIOD(EM=DDLLLYY)
+1160   2 END-DATE(EM=DDLLLYY)
+1170 **
+1180 1 PROCESS VIEW OF DOCTOR-VACANCY-PROCESS-CONTROL
+1190   2 CLOSE-DATE
+1200   2 AWARD-DATE
+1210   2 C*RUN-NUMBER-CROSS-REFERENCE
+1220   2 RUN-NUMBER-CROSS-REFERENCE
+1230     3 RUN-NBR(1:20)
+1240     3 RUN-NBR-PSEUDO-DATE(1:20)
+1250   2 IN-PROGRESS
+1260   2 FIRST-AE-CONVERSION-DATE
+1270   2 LAST-AE-CONVERSION-DATE
+1280   2 FIRST-CANCELLATION-DATE
+1290   2 LAST-CANCELLATION-DATE
+1300   2 DATE-SEQ-NBR
+1310 **
+1320 1 PROCESSING-HIST VIEW OF DOCTOR-VACANCY-AWARD-PROCESSING
+1330   2 DATE-AWD-CAT-TYPE-SEN-NUM-INSERT
+1340 **
+1350 END-DEFINE
+1360 * ==================================================================== *
+1370 *                         Activate <PF-KEYS>                           *
+1380 * ==================================================================== *
+1390 SET KEY ALL
+1400 SET KEY PF1 = HELP NAMED 'help'
+1410   PF2 = 'RAVH' NAMED 'RETRN'
+1420   PF3 = '%%' NAMED 'QUIT'
+1430   PF12 = 'MAIN' NAMED 'MAIN'
+1440   CLR = '%%'
+1450 **
+1460 FORMAT LS=133 PS=23 KD=ON ZP=OFF
+1470 * ==================================================================== *
+1480 *       Determine if User is Autorized to use this Demand Code         *
+1490 * ==================================================================== *
+1500 ASSIGN #AFMB001A.#SYSTEM-ID = 'C'
+1510 ASSIGN #AFMB001A.#RFI = 'CHRISTAE'
+1520 **
+1530 CALLNAT 'AFMB' #AFMB001A
+1540 **
+1550 IF #AFMB001A.#RETURN-CODE NE 'YY'
+1560   STOP
+1570 END-IF /* (1550)
+1580 * =================================================================== *
+1590 *                 Enter Training Period for AE Report                 *
+1600 * =================================================================== *
+1610 **
+1620 REPEAT
+1630   MOVE (AD=IP) TO #U-DISPLAY-CV (*)
+1640 **
+1650   IF #ALARM
+1660     INPUT WITH TEXT #MSG ALARM USING MAP 'CHRISTAE001M'
+1670   ELSE
+1680     INPUT WITH TEXT #MSG USING MAP 'CHRISTAE001M'
+1690   END-IF /* (1650)
+1700 **
+1710   RESET #MSG #ALARM
+1720 **
+1730   IF NOT(*PF-KEY = 'PF2' OR = 'PF3' OR = 'PF12' OR = 'ENTR' OR = 'CLR')
+1740       REINPUT 'Invalid program function key' ALARM
+1750   END-IF /* (1730)
+1760 * =================================================================== *
+1770 *                     Check/Process Direct Command                    *
+1780 * =================================================================== *
+1790   IF #DIRECT-COMMAND NE ' '
+1800     RELEASE STACK
+1810     STACK TOP COMMAND #DIRECT-COMMAND
+1820     RESET #DIRECT-COMMAND
+1830     STOP
+1840   END-IF /* (1790)
+1850 * =================================================================== *
+1860 *            Validate Input Training Period/Obtain End Date           *
+1870 * =================================================================== *
+1880   IF #TRNG-PERIOD = 0
+1890     REINPUT 'TRAINING PERIOD must be entered'
+1900       MARK *#TRNG-PERIOD ALARM
+1910   END-IF /* (1880)
+1920 **
+1930   F1. FIND (1) TRAINING-PERIOD WITH TRNG-PERIOD
+1940       = #TRNG-PERIOD
+1950     IF NO
+1960       REINPUT 'Invalid TRAINING PERIOD - not on file'
+1970         MARK *#TRNG-PERIOD ALARM
+1980     END-NOREC /* (1950)
+1990   END-FIND /* (1930) F1. TSS-TRNG-PERIOD-PARAMETERS
+2000 **
+2010   CHRISTAE001A.TRNG-PARS := #TRNG-PERIOD - #CONV-DATE
+2020   COMPUTE CHRISTAE001A.END-PARS = CHRISTAE001A.TRNG-PARS + 150
+2030 * ==================================================================== *
+2040 *                       Validate Input Printer ID
+2050 * ==================================================================== *
+2060   IF #PRINTER = 0
+2070     REINPUT 'PRINTER ID must be entered' MARK *#PRINTER ALARM
+2080   END-IF /* (2060)
+2090 **
+2100   ASSIGN #GETCHR-TID = #PRINTER
+2110   ASSIGN #GETCHR-LENGTH = 16
+2120 **
+2130   CALL 'GETCHR' #GETCHR-RTRN #GETCHR-WORK #GETCHR-LENGTH #GETCHR-TID
+2140 **
+2150   IF #MAX-LINES NE H'00'
+2160     REINPUT 'INVALID PRINTER ID' MARK *#PRINTER ALARM
+2170   END-IF /* (2150)
+2180 **
+2190   ASSIGN CHRISTAE001A.PRINTER = #PRINTER
+2200 * ==================================================================== *
+2210 *                  Validate Input Detail Report Ind
+2220 * ==================================================================== *
+2230   IF #DETAIL-REPORT NE 'Y' AND #DETAIL-REPORT NE ' '
+2240     REINPUT 'Please enter "Y" or leave this field blank'
+2250       MARK *#DETAIL-REPORT ALARM
+2260   END-IF /* (2230)
+2270 **
+2280   ASSIGN CHRISTAE001A.#DETAIL-REPORT-IND = #DETAIL-REPORT
+2290 **
+2300 * =================================================================== *
+2310 *    Generate Menu of Advance Entitlement Run Numbers for Selection   *
+2320 * =================================================================== *
+2330   R1. READ PROCESS BY DATE-SEQ-NBR
+2340     IF AWARD-DATE (R1.) = 0
+2350 **
+2360       DECIDE FOR EVERY CONDITION
+2370         WHEN IN-PROGRESS (R1.) = 'I'   /* Don't produce report if
+2380           ASSIGN #MSG                  /* ..award process in progress
+2390             = 'AE assignment report inhibited during awards process'
+2400 **
+2410         WHEN IN-PROGRESS (R1.) = 'R'   /* Don't produce report if
+2420           ASSIGN #MSG                  /* ..data base being refreshed
+2430             = 'AE report unavailable - DOCTOR data base being refreshed'
+2440 **
+2450         WHEN ANY
+2460           ASSIGN #ALARM = TRUE
+2470           ESCAPE BOTTOM
+2480         WHEN NONE
+2490           IGNORE
+2500       END-DECIDE /* (2360)
+2510 **
+2520       ASSIGN CHRISTAE001A.CLOSE-PARS = CLOSE-DATE (R1.)
+2530       #CLOSE-DATE := #CONV-DATE + CLOSE-DATE (R1.)
+2540 **
+2550       IF C*RUN-NUMBER-CROSS-REFERENCE (R1.) = 0
+2560         MOVE EDITED #CLOSE-DATE (EM=DDLLLYY) TO #CLOSE
+2570         REINPUT 'No runs associated with CLOSE DATE:1:',#CLOSE
+2580           MARK *#TRNG-PERIOD ALARM
+2590       ELSE
+2600         ASSIGN #I = 1
+2610         FOR #J 1 C*RUN-NUMBER-CROSS-REFERENCE (R1.)
+2620           H1. HISTOGRAM (1) PROCESSING-HIST
+2630             FOR DATE-AWD-CAT-TYPE-SEN-NUM-INSERT
+2640               STARTING FROM RUN-NBR-PSEUDO-DATE (#J)
+2650             END-HISTOGRAM /* (H1.)
+2660 **
+2670             IF *COUNTER (H1.) NE 0
+2680               IF RUN-NBR (R1./#J) NE 0
+2690                 ASSIGN #RUN-NBR (#I) = RUN-NBR (R1./#J)
+2700                 ASSIGN #RUN-TEXT (#I) = 'RUN NBR'
+2710                 ASSIGN #CHOICE (#I) = '_'
+2720                 ASSIGN #U-DISPLAY-CV (#I) = (CD=RE)
+2730                 ASSIGN #PSEUDO-PARS (#I) = RUN-NBR-PSEUDO-DATE (R1./#J)
+2740                 ADD 1 TO #I
+2750               END-IF /* (2680) Run nbr not 0
+2760             ELSE
+2770               ESCAPE BOTTOM (R1.)
+2780             END-IF /* (2670) Histogram cntr not 0
+2790           END-FOR /* (2610) All run cross refs
+2800           ESCAPE BOTTOM (R1.)
+2810         END-IF /* (2550) No run cross refs
+2820       ELSE
+2830         REINPUT 'All DOCTOR-VACANCY-PROCESS-CONTROL have been awarded'
+2840           MARK *#TRNG-PERIOD ALARM
+2850       END-IF /* (2340) No award date
+2860     END-READ /* (2330) R1. DOCTOR Vacancy Process Control
+2870     IF #ALARM
+2880       ESCAPE TOP
+2890     END-IF /* (2870)
+2900 **
+2910     IF *COUNTER (R1.) = 0
+2920       REINPUT
+2930         'No records found in read of DOCTOR-Vacancy-Process-Control file'
+2940         MARK *#TRNG-PERIOD ALARM
+2950     END-IF /* (2910)
+2960 **
+2970     FOR #I #J 20                         /* Disable unused input fields
+2980       ASSIGN #U-DISPLAY-CV (#I) = (AD=P)
+2990     END-FOR /* (2970)
+3000     COMPUTE #J = #I - 1
+3010 * ==================================================================== *
+3020 *                          Select Run Number                           *
+3030 * ==================================================================== *
+3040     MOVE (AD=IP) TO #U-DETAIL-CV
+3050     MOVE (AD=IP) TO #U-PRINTER-CV
+3060     MOVE (AD=IP) TO #U-TRNG-PERIOD-CV
+3070     ASSIGN #CLOSE-DATE-TITLE = 'CLOSE DATE:'
+3080     ASSIGN #MARK-TITLE = 'MARK DESIRED REPORT:'
+3090 **
+3100     INPUT USING MAP 'CHRISTAE001M' NO ERASE
+3110 **
+3120     RESET #MSG #ALARM
+3130 **
+3140     IF NOT(*PF-KEY = 'PF2' OR ='PF3' OR = 'PF12' OR = 'ENTR' OR = 'CLR')
+3150         REINPUT 'INVALID PROGRAM FUNCTION KEY' ALARM
+3160     END-IF /* (3140)
+3170 * =================================================================== *
+3180 *                     Check/Process Direct Command                    *
+3190 * =================================================================== *
+3200     IF #DIRECT-COMMAND NE ' '
+3210       RELEASE STACK
+3220       STACK TOP COMMAND #DIRECT-COMMAND
+3230       RESET #DIRECT-COMMAND
+3240       STOP
+3250     END-IF /* (3200)
+3260 * ==================================================================== *
+3270 *                             Verify Selection                         *
+3280 * ==================================================================== *
+3290     FOR #I 1 #J                          /* Only allow 'X' to mark
+3300       IF #CHOICE (#I) NE 'X'
+3310           AND #CHOICE (#I) NE ' '
+3320           AND #CHOICE (#I) NE '_'
+3330         REINPUT 'Invalid selection - mark with "X" to select'
+3340           MARK *#CHOICE (#I) ALARM
+3350       END-IF /* (3300)
+3360     END-FOR /* (3290)
+3370 **
+3380     RESET #SELECTED
+3390     FOR #I 1 #J
+3400       IF #CHOICE (#I) = 'X'
+3410         IF #SELECTED                     /* Allow only one run selection
+3420           REINPUT 'Select one RUN NUMBER only'
+3430             MARK *#CHOICE (#I) ALARM
+3440         ELSE
+3450           ASSIGN #SELECTED = TRUE
+3460         END-IF /* (3410)
+3470       END-IF /* (3400)
+3480     END-FOR /* (3390)
+3490 **
+3500     IF NOT #SELECTED                     /* Run number must be selected
+3510       REINPUT 'Mark selection with an "X"'
+3520         MARK *#CHOICE (1) ALARM
+3530     END-IF /* (3500)
+3540 **
+3550     FOR #I 1 20
+3560       IF #CHOICE (#I) = 'X'           /* Pseudo-date is used to obtain
+3570         ASSIGN CHRISTAE001A.RUN-NBR = #I
+3580         ASSIGN CHRISTAE001A.PSEUDO-PARS = #PSEUDO-PARS (#I)
+3590         ESCAPE BOTTOM                  /* ..category rankings and AEs
+3600       END-IF /* (3560)
+3610     END-FOR /* (3550)
+3620 * ==================================================================== *
+3630 *                      Obtain Conversion Window                        *
+3640 * ==================================================================== *
+3650     F2. FIND (1) PROCESS WITH CLOSE-DATE /* For close date/run report,
+3660         = CHRISTAE001A.CLOSE-PARS            /* ..obtain conversion window
+3670 **                                       /* ..for selected run
+3680       IF NO
+3690         REINPUT
+3700           'No process control record for CLOSE DATE:1:',#CLOSE
+3710           ALARM
+3720       END-NOREC /* (3680)
+3730 **
+3740       IF FIRST-AE-CONVERSION-DATE (F2.) NE 0
+3750         ASSIGN CHRISTAE001A.WIN-BEG-PARS = FIRST-AE-CONVERSION-DATE (F2.)
+3760         ASSIGN CHRISTAE001A.WIN-END-PARS = LAST-AE-CONVERSION-DATE (F2.)
+3770       ELSE                               /* If no conversion dates,
+3780         ASSIGN CHRISTAE001A.WIN-BEG-PARS = FIRST-CANCELLATION-DATE (F2.)
+3790         ASSIGN CHRISTAE001A.WIN-END-PARS = LAST-CANCELLATION-DATE (F2.)
+3800       END-IF /* (3740)                   /* ..use cancellation dates
+3810     END-FIND /* (3650) F2. DOCTOR Vacancy Process Control
+3820 * ==================================================================== *
+3830 *                         Initiate JCL Module                          *
+3840 * ==================================================================== *
+3850 **
+3860     RESET CHRISTAE001A.ERROR-CODE
+3870 **
+3880     CALLNAT 'CHRISTAE010N' CHRISTAE001A      /* CALLS JCL PROGRAM
+3890 **
+3900     DECIDE ON FIRST VALUE CHRISTAE001A.ERROR-CODE
+3910       VALUE 0
+3920         COMPRESS 'BATCH JOB:' CHRISTAE001A.JOBNAME
+3930               'Successfully submitted' INTO #MSG
+3940       VALUE 800
+3950         #MSG := 'CALL TO "WHERE" FAILED IN CHRISTAE010N, NOT SUBMITTED'
+3960         ASSIGN #ALARM = TRUE
+3970       VALUE 900
+3980         #MSG := 'CALL TO "RJE" FAILED IN CHRISTAE010N, NOT SUBMITTED'
+3990         ASSIGN #ALARM = TRUE
+4000       NONE IGNORE
+4010     END-DECIDE /* (3900)
+3890 **
+3900     DECIDE ON FIRST VALUE CHRISTAE001A.ERROR-CODE
+3910       VALUE 0
+3920         COMPRESS 'BATCH JOB:' CHRISTAE001A.JOBNAME
+3930               'Successfully submitted' INTO #MSG
+3940       VALUE 800
+3950         #MSG := 'CALL TO "WHERE" FAILED IN CHRISTAE010N, NOT SUBMITTED'
+3960         ASSIGN #ALARM = TRUE
+3970       VALUE 900
+3980         #MSG := 'CALL TO "RJE" FAILED IN CHRISTAE010N, NOT SUBMITTED'
+3990         ASSIGN #ALARM = TRUE
+4000       NONE IGNORE
+4010     END-DECIDE /* (3900)
+4020 **
+4030   END-REPEAT /* (3100)
+4040 **
+4050 END
+***** End of List *****
