@@ -27,6 +27,10 @@
 0870   ASSIGN #IN-USER-ID = *USER              /* user, get system variable
 0880 END-IF /* (0860)
 0890 *
+0860 IF #IN-USER-ID = ' ' THEN      /* if activating function does not pass
+0870   ASSIGN #IN-USER-ID = *USER              /* user, get system variable
+0880 END-IF /* (0860)
+0890 *
 0900 IF #IN-SYS/SUBSYS-ID NE 'C' THEN        /* if chkng subsys specific rfi
 0910   ASSIGN #SUBSYSTEM-ID = #IN-SYS/SUBSYS-ID        /* save subsys passed
 0920   ASSIGN #IN-SYS/SUBSYS-ID = 'C'         /* set sys id=c for Staff sched
